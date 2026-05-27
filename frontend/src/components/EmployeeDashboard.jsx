@@ -19,18 +19,18 @@ function EmployeeDashboard() {
 
   const fetchTasks = async () => {
 
-  const response = await axios.get(
-    `${API}/all`
-  );
-
-  const filteredTasks =
-    response.data.filter(
-      (task) =>
-        task.assignedTo === email
+    const response = await axios.get(
+      `${API}/all`
     );
 
-  setTasks(filteredTasks);
-};
+    const filteredTasks =
+      response.data.filter(
+        (task) =>
+          task.assignedTo === email
+      );
+
+    setTasks(filteredTasks);
+  };
 
   const logout = () => {
 
@@ -41,11 +41,19 @@ function EmployeeDashboard() {
 
   return (
 
-    <div className="container mt-5">
+    <div
+      className="container-fluid min-vh-100 p-5"
+      style={{
+        background:
+          "linear-gradient(to right, #eef2f3, #dfe9f3)"
+      }}
+    >
+
+      {/* Header */}
 
       <div className="d-flex justify-content-between align-items-center mb-4">
 
-        <h1 className="text-success">
+        <h1 className="text-success fw-bold">
           Employee Dashboard
         </h1>
 
@@ -58,46 +66,85 @@ function EmployeeDashboard() {
 
       </div>
 
-      <table className="table table-bordered">
+      {/* Task Table */}
 
-        <thead className="table-dark">
+      <div
+        className="card shadow-lg p-4"
+        style={{
+          borderRadius: "20px"
+        }}
+      >
 
-          <tr>
+        <h3 className="mb-4 text-secondary">
+          Assigned Tasks
+        </h3>
 
-            <th>ID</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Priority</th>
-            <th>Status</th>
+        <table className="table table-hover align-middle">
 
-          </tr>
+          <thead className="table-dark">
 
-        </thead>
+            <tr>
 
-        <tbody>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Priority</th>
+              <th>Status</th>
 
-          {
-            tasks.map((task) => (
+            </tr>
 
-              <tr key={task.id}>
+          </thead>
 
-                <td>{task.id}</td>
+          <tbody>
 
-                <td>{task.title}</td>
+            {
+              tasks.map((task) => (
 
-                <td>{task.description}</td>
+                <tr key={task.id}>
 
-                <td>{task.priority}</td>
+                  <td>{task.id}</td>
 
-                <td>{task.status}</td>
+                  <td>{task.title}</td>
 
-              </tr>
-            ))
-          }
+                  <td>{task.description}</td>
 
-        </tbody>
+                  <td>
 
-      </table>
+                    <span
+                      className={`badge ${
+                        task.priority === "HIGH"
+                        ? "bg-danger"
+                        : task.priority === "MEDIUM"
+                        ? "bg-warning text-dark"
+                        : "bg-success"
+                      }`}
+                    >
+
+                      {task.priority}
+
+                    </span>
+
+                  </td>
+
+                  <td>
+
+                    <span className="badge bg-info">
+
+                      {task.status}
+
+                    </span>
+
+                  </td>
+
+                </tr>
+              ))
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
   );

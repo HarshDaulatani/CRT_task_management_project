@@ -63,31 +63,24 @@ function ManagerDashboard() {
       status: "PENDING"
     };
 
-    try {
+    if(editId == null) {
 
-      if(editId == null) {
+      await axios.post(
+        `${TASK_API}/add`,
+        task
+      );
 
-        await axios.post(
-          `${TASK_API}/add`,
-          task
-        );
+    } else {
 
-      } else {
-
-        await axios.put(
-          `${TASK_API}/update/${editId}`,
-          task
-        );
-      }
-
-      fetchTasks();
-
-      resetForm();
-
-    } catch(error) {
-
-      console.log(error);
+      await axios.put(
+        `${TASK_API}/update/${editId}`,
+        task
+      );
     }
+
+    fetchTasks();
+
+    resetForm();
   };
 
   const editTask = (task) => {
@@ -121,18 +114,31 @@ function ManagerDashboard() {
 
   return (
 
-    <div className="container mt-5">
+    <div
+      className="container mt-5 p-4 rounded"
+      style={{
+        backgroundColor: "#f8f9fa"
+      }}
+    >
 
-      {/* Heading */}
+      {/* Header */}
 
       <div className="d-flex justify-content-between align-items-center mb-4">
 
-        <h1 className="text-primary">
-          Manager Dashboard
-        </h1>
+        <div>
+
+          <h1 className="fw-bold text-primary">
+            Manager Dashboard
+          </h1>
+
+          <p className="text-muted">
+            Manage and assign tasks
+          </p>
+
+        </div>
 
         <button
-          className="btn btn-danger"
+          className="btn btn-danger px-4"
           onClick={logout}
         >
           Logout
@@ -142,19 +148,26 @@ function ManagerDashboard() {
 
       {/* Form */}
 
-      <div className="card p-4 mb-4">
+      <div
+        className="card shadow border-0 p-4 mb-4"
+        style={{
+          borderRadius: "15px"
+        }}
+      >
 
-        <h3>
+        <h3 className="mb-4">
+
           {
             editId == null
             ? "Add Task"
             : "Update Task"
           }
+
         </h3>
 
         <input
           type="text"
-          className="form-control mt-3"
+          className="form-control mb-3"
           placeholder="Task Title"
           value={title}
           onChange={(e) =>
@@ -163,8 +176,9 @@ function ManagerDashboard() {
         />
 
         <textarea
-          className="form-control mt-3"
-          placeholder="Description"
+          className="form-control mb-3"
+          placeholder="Task Description"
+          rows="3"
           value={description}
           onChange={(e) =>
             setDescription(e.target.value)
@@ -172,7 +186,7 @@ function ManagerDashboard() {
         />
 
         <select
-          className="form-select mt-3"
+          className="form-select mb-3"
           value={priority}
           onChange={(e) =>
             setPriority(e.target.value)
@@ -180,21 +194,21 @@ function ManagerDashboard() {
         >
 
           <option value="HIGH">
-            High
+            High Priority
           </option>
 
           <option value="MEDIUM">
-            Medium
+            Medium Priority
           </option>
 
           <option value="LOW">
-            Low
+            Low Priority
           </option>
 
         </select>
 
         <select
-          className="form-select mt-3"
+          className="form-select mb-4"
           value={assignedTo}
           onChange={(e) =>
             setAssignedTo(e.target.value)
@@ -226,7 +240,7 @@ function ManagerDashboard() {
             editId == null
             ? "btn-primary"
             : "btn-warning"
-          } mt-3`}
+          }`}
           onClick={saveTask}
         >
 
@@ -242,73 +256,106 @@ function ManagerDashboard() {
 
       {/* Table */}
 
-      <table className="table table-bordered">
+      <div
+        className="card shadow border-0 p-4"
+        style={{
+          borderRadius: "15px"
+        }}
+      >
 
-        <thead className="table-dark">
+        <table className="table table-hover align-middle">
 
-          <tr>
+          <thead className="table-dark">
 
-            <th>ID</th>
-            <th>Title</th>
-            <th>Employee</th>
-            <th>Priority</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <tr>
 
-          </tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Employee</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Actions</th>
 
-        </thead>
+            </tr>
 
-        <tbody>
+          </thead>
 
-          {
-            tasks.map((task) => (
+          <tbody>
 
-              <tr key={task.id}>
+            {
+              tasks.map((task) => (
 
-                <td>{task.id}</td>
+                <tr key={task.id}>
 
-                <td>{task.title}</td>
+                  <td>{task.id}</td>
 
-                <td>{task.assignedTo}</td>
+                  <td>{task.title}</td>
 
-                <td>{task.priority}</td>
+                  <td>{task.assignedTo}</td>
 
-                <td>{task.status}</td>
+                  <td>
 
-                <td>
+                    <span
+                      className={`badge px-3 py-2 ${
+                        task.priority === "HIGH"
+                        ? "bg-danger"
+                        : task.priority === "MEDIUM"
+                        ? "bg-warning text-dark"
+                        : "bg-success"
+                      }`}
+                    >
 
-                  <button
-                    className="btn btn-warning btn-sm me-2"
-                    onClick={() =>
-                      editTask(task)
-                    }
-                  >
+                      {task.priority}
 
-                    Edit
+                    </span>
 
-                  </button>
+                  </td>
 
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() =>
-                      deleteTask(task.id)
-                    }
-                  >
+                  <td>
 
-                    Delete
+                    <span className="badge bg-info text-dark px-3 py-2">
 
-                  </button>
+                      {task.status}
 
-                </td>
+                    </span>
 
-              </tr>
-            ))
-          }
+                  </td>
 
-        </tbody>
+                  <td>
 
-      </table>
+                    <button
+                      className="btn btn-outline-warning btn-sm me-2"
+                      onClick={() =>
+                        editTask(task)
+                      }
+                    >
+
+                      Edit
+
+                    </button>
+
+                    <button
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() =>
+                        deleteTask(task.id)
+                      }
+                    >
+
+                      Delete
+
+                    </button>
+
+                  </td>
+
+                </tr>
+              ))
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
   );
